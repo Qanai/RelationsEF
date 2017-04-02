@@ -1,4 +1,5 @@
-﻿@model RelationsEF.Web.Models.ViewModels.UserProfileViewModel
+﻿@using RelationsEF.Web.Models.ViewModels
+@model UserProfileViewModel
 
 @{
     ViewBag.Title = "Create";
@@ -20,6 +21,8 @@
             @Html.EditorFor(model => model.Name)
             @Html.ValidationMessageFor(model => model.Name)
         </div>
+
+        @Html.EditorFor(model => model.Courses)
 
         <p>
             <input type="submit" value="Create" />

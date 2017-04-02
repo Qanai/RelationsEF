@@ -1,0 +1,8 @@
+﻿@using RelationsEF.Web.Models.ViewModels
+@model AssignedCourseData
+
+<fieldset>
+    @Html.HiddenFor(model => model.CourseID)
+    @Html.CheckBoxFor(model => model.Assigned)
+    @Html.DisplayFor(model => model.CourseDescription)
+</fieldset>
