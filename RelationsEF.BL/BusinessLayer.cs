@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.BL
 {
-    public class BusinessLayer : IBusinessLayer
+    public class BusinessLayer : IBusinessLayer, IDisposable
     {
         private IUserProfileRepository userRepo;
         private ICourseRepository courseRepo;
@@ -86,5 +86,10 @@ namespace RelationsEF.BL
         }
         
         #endregion
+
+        public void Dispose()
+        {
+            
+        }
     }
 }
