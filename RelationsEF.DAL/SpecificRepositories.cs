@@ -13,7 +13,19 @@ namespace RelationsEF.DAL
     #endregion
 
     #region Classes
-    public class CourseRepository : GenericDataRepository<Course>, ICourseRepository { }
-    public class UserProfileRepository : GenericDataRepository<UserProfile>, IUserProfileRepository { }
+    public class CourseRepository : GenericDataRepository<Course>, ICourseRepository
+    {
+        public CourseRepository()
+            : this(new RelationsContext()) { }
+
+        public CourseRepository(RelationsContext context)
+            : base(context) { }
+    }
+    public class UserProfileRepository : GenericDataRepository<UserProfile>, IUserProfileRepository
+    {
+        public UserProfileRepository() : this(new RelationsContext()) { }
+
+        public UserProfileRepository(RelationsContext context) : base(context) { }
+    }
     #endregion
 }

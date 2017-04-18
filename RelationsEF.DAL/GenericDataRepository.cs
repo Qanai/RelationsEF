@@ -14,12 +14,12 @@ namespace RelationsEF.DAL
         private RelationsContext context;
         private bool disposed = false;
 
-        public GenericDataRepository(RelationsContext ctx)
+        public virtual GenericDataRepository(RelationsContext ctx)
         {
             context = ctx;
         }
 
-        public GenericDataRepository()
+        public virtual GenericDataRepository()
         {
             if (context == null)
             {
