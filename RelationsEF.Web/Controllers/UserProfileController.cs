@@ -42,8 +42,15 @@ namespace RelationsEF.Web.Controllers
             {
                 var userProfile = new UserProfile { Name = userProfileViewModel.Name };
 
-                AddOrUpdateCourses(userProfile, userProfileViewModel.Courses);
                 await bl.AddUser(userProfile);
+                int newUserId = userProfile.UserProfileID;
+                userProfile = bl.GetUser(newUserId);
+                if (userProfile != null)
+                {
+                    AddOrUpdateCourses(userProfile, userProfileViewModel.Courses);
+                    await bl.UpdateUser(userProfile);
+                    //await bl.UpdateCourse(userProfile.Courses.ToArray());
+                }
 
                 return RedirectToAction("Index");
             }
@@ -55,15 +62,20 @@ namespace RelationsEF.Web.Controllers
         {
             if (assignedCourses != null)
             {
-                foreach (var assignedCourse in assignedCourses)
-                {
-                    if (assignedCourse.Assigned)
-                    {
-                        var course = bl.GetCourse(assignedCourse.CourseID); //new Course { CourseID = assignedCourse.CourseID };
-                        //db.Courses.Attach(course);
-                        userProfile.Courses.Add(course);
-                    }
-                }
+                var courses = bl.GetAllCourses().Where(c => assignedCourses.Any(ac => ac.Assigned && ac.CourseID == c.CourseID));
+                userProfile.Courses = courses.ToList();
+
+                //foreach (var assignedCourse in assignedCourses)
+                //{
+                //    if (assignedCourse.Assigned)
+                //    {
+                //        var course = bl.GetCourse(assignedCourse.CourseID); //new Course { CourseID = assignedCourse.CourseID };
+                //        //db.Courses.Attach(course);
+                //        userProfile.Courses.Add(course);
+                //        course.UserProfiles.Add(userProfile);
+                //        //bl.UpdateCourse(course);
+                //    }
+                //}
             }
         }
 
@@ -83,6 +95,12 @@ namespace RelationsEF.Web.Controllers
             }
 
             return assignedCourses;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            
+            base.Dispose(disposing);
         }
     }
 }

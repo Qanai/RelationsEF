@@ -9,20 +9,36 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.DAL
 {
-    public class GenericDataRepository<T> : IGenericDataRepository<T> where T : class
+    public class GenericDataRepository<T> : IGenericDataRepository<T> where T : class, IDisposable
     {
+        private RelationsContext context;
+        private bool disposed = false;
+
+        public GenericDataRepository(RelationsContext ctx)
+        {
+            context = ctx;
+        }
+
+        public GenericDataRepository()
+        {
+            if (context == null)
+            {
+                context = new RelationsContext();
+            }
+        }
+
         public virtual IList<T> GetAll(params Expression<Func<T, object>>[] navigationProperties)
         {
             List<T> list = null;
 
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
 
                 list = dbQuery
                     .AsNoTracking()
                     .ToList<T>();
-            }
+            //}
 
             return list;
         }
@@ -31,8 +47,8 @@ namespace RelationsEF.DAL
         {
             List<T> list = null;
 
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 context.Database.Log = message => Trace.Write(message);
 
                 IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
@@ -41,7 +57,7 @@ namespace RelationsEF.DAL
                     .AsNoTracking()
                     .Where(where)
                     .ToList<T>();
-            }
+            //}
 
             return list;
         }
@@ -50,22 +66,22 @@ namespace RelationsEF.DAL
         {
             T item = null;
 
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
 
                 item = dbQuery
                     .AsNoTracking()
                     .FirstOrDefault(where);
-            }
+            //}
 
             return item;
         }
 
         public virtual async Task Add(params T[] items)
         {
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 context.Database.Log = message => Trace.Write(message);
 
                 foreach (T item in items)
@@ -74,13 +90,13 @@ namespace RelationsEF.DAL
                 }
 
                 await context.SaveChangesAsync();
-            }
+            //}
         }
 
         public virtual async Task Update(params T[] items)
         {
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 context.Database.Log = message => Trace.Write(message);
 
                 foreach (var item in items)
@@ -89,19 +105,38 @@ namespace RelationsEF.DAL
                 }
 
                 await context.SaveChangesAsync();
-            }
+            //}
         }
 
         public virtual async Task Remove(params T[] items)
         {
-            using (var context = new RelationsContext())
-            {
+            //using (var context = new RelationsContext())
+            //{
                 foreach (var item in items)
                 {
                     context.Entry(item).State = EntityState.Deleted;
                 }
 
                 await context.SaveChangesAsync();
+            //}
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    context.Dispose();
+                }
+
+                this.disposed = true;
             }
         }
 
