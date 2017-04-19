@@ -78,7 +78,8 @@ namespace RelationsEF.DAL
             return item;
         }
 
-        public virtual async Task Add(params T[] items)
+        //public virtual async Task Add(params T[] items)
+        public virtual void Add(params T[] items)
         {
             //using (var context = new RelationsContext())
             //{
@@ -89,11 +90,12 @@ namespace RelationsEF.DAL
                     context.Entry(item).State = EntityState.Added;
                 }
 
-                await context.SaveChangesAsync();
+                //await context.SaveChangesAsync();
             //}
         }
 
-        public virtual async Task Update(params T[] items)
+        //public virtual async Task Update(params T[] items)
+        public virtual void Update(params T[] items)
         {
             //using (var context = new RelationsContext())
             //{
@@ -104,11 +106,12 @@ namespace RelationsEF.DAL
                     context.Entry(item).State = EntityState.Modified;
                 }
 
-                await context.SaveChangesAsync();
+                //await context.SaveChangesAsync();
             //}
         }
 
-        public virtual async Task Remove(params T[] items)
+        //public virtual async Task Remove(params T[] items)
+        public virtual void Remove(params T[] items)
         {
             //using (var context = new RelationsContext())
             //{
@@ -117,7 +120,7 @@ namespace RelationsEF.DAL
                     context.Entry(item).State = EntityState.Deleted;
                 }
 
-                await context.SaveChangesAsync();
+                //await context.SaveChangesAsync();
             //}
         }
 

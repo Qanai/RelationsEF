@@ -38,6 +38,24 @@ namespace RelationsEF.DAL
             return null;
         }
 
+        public void Commit()
+        {
+            context.SaveChanges();
+        }
+
+        public async Task CommitAsync()
+        {
+            await context.SaveChangesAsync();
+        }
+
+        public void Rollback()
+        {
+            context
+                .ChangeTracker
+                .Entries()
+                .ToList()
+                .ForEach(x => x.Reload());
+        }
 
         public void Dispose()
         {
