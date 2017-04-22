@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.DAL
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly RelationsContext context;
 

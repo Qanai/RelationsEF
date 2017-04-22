@@ -8,15 +8,17 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.BL
 {
-    public class BusinessLayer : IBusinessLayer, IDisposable
+    public class BusinessLayer : IBusinessLayer
     {
+        private IUnitOfWork unitOfWork;
         private IUserProfileRepository userRepo;
         private ICourseRepository courseRepo;
 
         public BusinessLayer()
         {
-            userRepo = new UserProfileRepository();
-            courseRepo = new CourseRepository();
+            unitOfWork = new UnitOfWork();
+            userRepo = unitOfWork.GetRepository<UserProfileRepository>();
+            courseRepo = unitOfWork.GetRepository<CourseRepository>();
         }
 
         #region UserProfile
@@ -38,17 +40,20 @@ namespace RelationsEF.BL
 
         public async Task AddUser(params UserProfile[] users)
         {
-            await userRepo.Add(users);
+            userRepo.Add(users);
+            await unitOfWork.CommitAsync();
         }
 
         public async Task UpdateUser(params UserProfile[] users)
         {
-            await userRepo.Update(users);
+            userRepo.Update(users);
+            await unitOfWork.CommitAsync();
         }
 
         public async Task RemoveUser(params UserProfile[] users)
         {
-            await userRepo.Remove(users);
+            userRepo.Remove(users);
+            await unitOfWork.CommitAsync();
         }
                 
         #endregion
@@ -72,24 +77,27 @@ namespace RelationsEF.BL
 
         public async Task AddCourse(params Course[] courses)
         {
-            await courseRepo.Add(courses);
+            courseRepo.Add(courses);
+            await unitOfWork.CommitAsync();
         }
 
         public async Task UpdateCourse(params Course[] courses)
         {
-            await courseRepo.Update(courses);
+            courseRepo.Update(courses);
+            await unitOfWork.CommitAsync();
         }
 
         public async Task RemoveCourse(params Course[] courses)
         {
-            await courseRepo.Remove(courses);
+            courseRepo.Remove(courses);
+            await unitOfWork.CommitAsync();
         }
         
         #endregion
 
         public void Dispose()
         {
-            
+            unitOfWork.Dispose();
         }
     }
 }

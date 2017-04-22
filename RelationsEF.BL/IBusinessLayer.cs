@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.BL
 {
-    public interface IBusinessLayer
+    public interface IBusinessLayer : IDisposable
     {
         #region UserProfile
         IList<UserProfile> GetAllUsers();

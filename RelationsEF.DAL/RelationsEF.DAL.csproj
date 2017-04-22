@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="GenericDataRepository.cs" />
     <Compile Include="IGenericDataRepository.cs" />
+    <Compile Include="IUnitOfWork.cs" />
     <Compile Include="MockChangeInitializer.cs" />
     <Compile Include="MockHelper.cs" />
     <Compile Include="MockNewInitializer.cs" />

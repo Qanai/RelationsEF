@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace RelationsEF.DAL
 {
-    public class GenericDataRepository<T> : IGenericDataRepository<T> where T : class, IDisposable
+    public class GenericDataRepository<T> : IGenericDataRepository<T> where T : class
     {
         private RelationsContext context;
         private bool disposed = false;
 
-        public virtual GenericDataRepository(RelationsContext ctx)
+        public GenericDataRepository(RelationsContext ctx)
         {
             context = ctx;
         }
 
-        public virtual GenericDataRepository()
+        public GenericDataRepository()
         {
             if (context == null)
             {
@@ -122,25 +122,6 @@ namespace RelationsEF.DAL
 
                 //await context.SaveChangesAsync();
             //}
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    context.Dispose();
-                }
-
-                this.disposed = true;
-            }
         }
 
         private static IQueryable<T> ApplyEagerLoading(Expression<Func<T, object>>[] navigationProperties, RelationsContext context)

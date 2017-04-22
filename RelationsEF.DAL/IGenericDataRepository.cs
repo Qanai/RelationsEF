@@ -12,8 +12,8 @@ namespace RelationsEF.DAL
         IList<T> GetAll(params Expression<Func<T, object>>[] navigationProperties);
         IList<T> GetList(Func<T, bool> where, params Expression<Func<T, object>>[] navigationProperties);
         T GetSingle(Func<T, bool> where, params Expression<Func<T, object>>[] navigationProperties);
-        Task Add(params T[] items);
-        Task Update(params T[] items);
-        Task Remove(params T[] items);
+        void Add(params T[] items);
+        void Update(params T[] items);
+        void Remove(params T[] items);
     }
 }

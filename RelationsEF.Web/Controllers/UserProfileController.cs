@@ -99,7 +99,7 @@ namespace RelationsEF.Web.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            
+            bl.Dispose();
             base.Dispose(disposing);
         }
     }
