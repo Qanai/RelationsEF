@@ -55,7 +55,29 @@ namespace RelationsEF.BL
             userRepo.Remove(users);
             await unitOfWork.CommitAsync();
         }
-                
+
+        public async Task UpdateUserCourses(int userId, params Course[] courses)
+        {
+            var user = GetUser(userId);
+            if (user != null)
+            {
+                if (user.Courses == null)
+                {
+                    user.Courses = new List<Course>();
+                }
+
+                user.Courses.Clear();
+                foreach (var course in courses)
+                {
+                    user.Courses.Add(course);
+                }
+
+                courseRepo.Update(courses);
+                userRepo.Update(user);
+                await unitOfWork.CommitAsync();
+            }
+        }
+
         #endregion
 
         #region Course

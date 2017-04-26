@@ -15,10 +15,9 @@ namespace RelationsEF.DAL
         {
             var ensureDLLIsCopied = SqlProviderServices.Instance;
 
-
-            //Database.SetInitializer(new MockChangeInitializer());
             Database.SetInitializer(new MockNewInitializer());
-            
+            //Database.SetInitializer(new MockChangeInitializer());
+            //Database.SetInitializer<RelationsContext>(null);
         }
 
         public DbSet<UserProfile> UserProfiles { get; set; }
