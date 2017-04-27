@@ -15,5 +15,6 @@ namespace RelationsEF.DAL
         void Add(params T[] items);
         void Update(params T[] items);
         void Remove(params T[] items);
+        void UpdateRelated(Func<T, bool> where, params Expression<Func<T, object>>[] navigationProperties);
     }
 }

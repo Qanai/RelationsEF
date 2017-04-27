@@ -69,10 +69,15 @@ namespace RelationsEF.BL
                 user.Courses.Clear();
                 foreach (var course in courses)
                 {
-                    user.Courses.Add(course);
+                    var c = courseRepo.GetSingle(i => i.CourseID == course.CourseID);
+                    user.Courses.Add(c);
+                    //c.UserProfiles.Add(user);
+
+                    //courseRepo.Update(c);
                 }
 
-                courseRepo.Update(courses);
+                userRepo.UpdateRelated(u => u.UserProfileID == user.UserProfileID, up => up.Courses);
+
                 userRepo.Update(user);
                 await unitOfWork.CommitAsync();
             }
@@ -81,7 +86,7 @@ namespace RelationsEF.BL
         #endregion
 
         #region Course
-        
+
         public IList<Course> GetAllCourses()
         {
             return courseRepo.GetAll();
@@ -114,7 +119,7 @@ namespace RelationsEF.BL
             courseRepo.Remove(courses);
             await unitOfWork.CommitAsync();
         }
-        
+
         #endregion
 
         public void Dispose()

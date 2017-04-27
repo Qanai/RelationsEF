@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,7 +13,7 @@ namespace RelationsEF.DAL
 {
     public class GenericDataRepository<T> : IGenericDataRepository<T> where T : class
     {
-        private RelationsContext context;
+        private DbContext context;
         private bool disposed = false;
 
         public GenericDataRepository(RelationsContext ctx)
@@ -124,7 +126,26 @@ namespace RelationsEF.DAL
             //}
         }
 
-        private static IQueryable<T> ApplyEagerLoading(Expression<Func<T, object>>[] navigationProperties, RelationsContext context)
+        public virtual void UpdateRelated(Func<T, bool> where, params Expression<Func<T, object>>[] navigationProperties)
+        {
+            var objCtx = ((IObjectContextAdapter)context).ObjectContext;
+            ObjectSet<T> objSet = objCtx.CreateObjectSet<T>();
+            var a = objSet.EntitySet.ElementType;
+
+            var items = GetList(where, navigationProperties);
+
+            foreach (var item in items)
+            {
+                foreach (var navProp in navigationProperties)
+                {
+                    var b = navProp.Body;
+
+                    //var coll = context.Entry(item).Collection(navProp)
+                }
+            }
+        }
+
+        private static IQueryable<T> ApplyEagerLoading(Expression<Func<T, object>>[] navigationProperties, DbContext context)
         {
             IQueryable<T> dbQuery = context.Set<T>();
 

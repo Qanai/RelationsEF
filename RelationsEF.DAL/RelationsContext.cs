@@ -13,6 +13,9 @@ namespace RelationsEF.DAL
         public RelationsContext()
             : base("name=RelationsEF")
         {
+            Configuration.LazyLoadingEnabled = false;
+            Configuration.ProxyCreationEnabled = false;
+
             var ensureDLLIsCopied = SqlProviderServices.Instance;
 
             Database.SetInitializer(new MockNewInitializer());
