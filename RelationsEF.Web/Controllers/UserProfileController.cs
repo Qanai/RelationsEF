@@ -64,6 +64,7 @@ namespace RelationsEF.Web.Controllers
             {
                 var courses = bl.GetAllCourses().Where(c => assignedCourses.Any(ac => ac.Assigned && ac.CourseID == c.CourseID));
                 bl.UpdateUserCourses(userProfile.UserProfileID, courses.ToArray());
+                
 
                 //foreach (var assignedCourse in assignedCourses)
                 //{
