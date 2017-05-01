@@ -81,7 +81,7 @@ namespace RelationsEF.BL
             //    await unitOfWork.CommitAsync();
             //}
 
-            userRepo.UpdateRelated(u => u.UserProfileID == userId, (IEnumerable<Course>)courses, "Courses", "CourseID");
+            await userRepo.UpdateRelated(u => u.UserProfileID == userId, (IEnumerable<Course>)courses, "Courses", "CourseID");
             //var user = GetUser(userId);
             //userRepo.Update(user);
             await unitOfWork.CommitAsync();
@@ -89,7 +89,7 @@ namespace RelationsEF.BL
 
         public async Task UpdateUserCourses(int userId, params object[] coursesIds)
         {
-            userRepo.UpdateRelated(u => u.UserProfileID == userId, coursesIds, "Courses", "CourseID");
+            await userRepo.UpdateRelated(u => u.UserProfileID == userId, coursesIds, "Courses", "CourseID");
             await unitOfWork.CommitAsync();
         }
 
