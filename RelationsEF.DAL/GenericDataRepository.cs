@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
@@ -35,11 +36,11 @@ namespace RelationsEF.DAL
 
             //using (var context = new RelationsContext())
             //{
-                IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
+            IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
 
-                list = dbQuery
-                    .AsNoTracking()
-                    .ToList<T>();
+            list = dbQuery
+                .AsNoTracking()
+                .ToList<T>();
             //}
 
             return list;
@@ -51,14 +52,14 @@ namespace RelationsEF.DAL
 
             //using (var context = new RelationsContext())
             //{
-                context.Database.Log = message => Trace.Write(message);
+            context.Database.Log = message => Trace.Write(message);
 
-                IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
+            IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
 
-                list = dbQuery
-                    .AsNoTracking()
-                    .Where(where)
-                    .ToList<T>();
+            list = dbQuery
+                .AsNoTracking()
+                .Where(where)
+                .ToList<T>();
             //}
 
             return list;
@@ -70,11 +71,11 @@ namespace RelationsEF.DAL
 
             //using (var context = new RelationsContext())
             //{
-                IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
+            IQueryable<T> dbQuery = ApplyEagerLoading(navigationProperties, context);
 
-                item = dbQuery
-                    .AsNoTracking()
-                    .FirstOrDefault(where);
+            item = dbQuery
+                .AsNoTracking()
+                .FirstOrDefault(where);
             //}
 
             return item;
@@ -85,14 +86,14 @@ namespace RelationsEF.DAL
         {
             //using (var context = new RelationsContext())
             //{
-                context.Database.Log = message => Trace.Write(message);
+            context.Database.Log = message => Trace.Write(message);
 
-                foreach (T item in items)
-                {
-                    context.Entry(item).State = EntityState.Added;
-                }
+            foreach (T item in items)
+            {
+                context.Entry(item).State = EntityState.Added;
+            }
 
-                //await context.SaveChangesAsync();
+            //await context.SaveChangesAsync();
             //}
         }
 
@@ -101,14 +102,14 @@ namespace RelationsEF.DAL
         {
             //using (var context = new RelationsContext())
             //{
-                context.Database.Log = message => Trace.Write(message);
+            context.Database.Log = message => Trace.Write(message);
 
-                foreach (var item in items)
-                {
-                    context.Entry(item).State = EntityState.Modified;
-                }
+            foreach (var item in items)
+            {
+                context.Entry(item).State = EntityState.Modified;
+            }
 
-                //await context.SaveChangesAsync();
+            //await context.SaveChangesAsync();
             //}
         }
 
@@ -117,12 +118,12 @@ namespace RelationsEF.DAL
         {
             //using (var context = new RelationsContext())
             //{
-                foreach (var item in items)
-                {
-                    context.Entry(item).State = EntityState.Deleted;
-                }
+            foreach (var item in items)
+            {
+                context.Entry(item).State = EntityState.Deleted;
+            }
 
-                //await context.SaveChangesAsync();
+            //await context.SaveChangesAsync();
             //}
         }
 
@@ -143,6 +144,63 @@ namespace RelationsEF.DAL
                     //var coll = context.Entry(item).Collection(navProp)
                 }
             }
+        }
+
+        public async Task UpdateRelated(Expression<Func<T, bool>> where, IEnumerable<object> updatedSet, string relatedPropertyName, string relatedPropertyKeyName)
+        {
+            if (updatedSet != null && updatedSet.Count() > 0)
+            {
+                // Get the generic type of the set
+                var type = updatedSet.First().GetType();
+
+                var items = context.Set<T>()
+                    .Include(relatedPropertyName)
+                    //.AsNoTracking()
+                    .Where(where.Compile())
+                    .ToList();
+
+                foreach (var item in items)
+                {
+                    var values = CreateList(type);
+
+                    //var a = updatedSet
+                    //        .Select(obj => obj.GetType());
+
+                    //var b = a.Select(t => t.GetProperty(relatedPropertyName));
+
+                    //var c = b.Select(pi => pi.GetValue())
+
+                    //var aa = updatedSet
+                    //        .Select(obj => (int)(obj
+                    //        .GetType()
+                    //        .GetProperty(relatedPropertyKeyName)
+                    //        .GetValue(obj, null)));
+
+                    //var bb = aa.Select(val => context.Set(type).Find(val));
+
+                    var relatedEntries = updatedSet
+                            .Select(obj => (int)(obj
+                            .GetType()
+                            .GetProperty(relatedPropertyKeyName)
+                            .GetValue(obj, null)))
+                        .Select(val => context.Set(type).Find(val));
+
+                    foreach (var entry in relatedEntries)
+                    {
+                        await context.Entry(entry).ReloadAsync();
+                        values.Add(entry);
+                    }
+
+                    context.Entry(item).Collection(relatedPropertyName).CurrentValue = values;
+                    context.Entry(item).State = EntityState.Modified;
+                }
+            }
+        }
+
+        private IList CreateList(Type type)
+        {
+            var genericList = typeof(List<>).MakeGenericType(type);
+            return (IList)Activator.CreateInstance(genericList);
         }
 
         private static IQueryable<T> ApplyEagerLoading(Expression<Func<T, object>>[] navigationProperties, DbContext context)

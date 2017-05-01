@@ -43,8 +43,8 @@ namespace RelationsEF.Web.Controllers
                 var userProfile = new UserProfile { Name = userProfileViewModel.Name };
 
                 await bl.AddUser(userProfile);
-                int newUserId = userProfile.UserProfileID;
-                userProfile = bl.GetUser(newUserId);
+                //int newUserId = userProfile.UserProfileID;
+                //userProfile = bl.GetUser(newUserId);
                 if (userProfile != null)
                 {
                     AddOrUpdateCourses(userProfile, userProfileViewModel.Courses);
@@ -62,8 +62,18 @@ namespace RelationsEF.Web.Controllers
         {
             if (assignedCourses != null)
             {
-                var courses = bl.GetAllCourses().Where(c => assignedCourses.Any(ac => ac.Assigned && ac.CourseID == c.CourseID));
+                var courses = //bl.GetAllCourses().Where(c => assignedCourses.Any(ac => ac.Assigned && ac.CourseID == c.CourseID));
+                    //assignedCourses.Select(ac => ac.CourseID);
+                    assignedCourses
+                        .Where(c => c.Assigned)
+                        .Select(
+                            ac => new Course
+                            {
+                                CourseID = ac.CourseID,
+                                CourseDescription = ac.CourseDescription                            
+                            });
                 bl.UpdateUserCourses(userProfile.UserProfileID, courses.ToArray());
+                
 
                 //foreach (var assignedCourse in assignedCourses)
                 //{
