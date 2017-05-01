@@ -87,6 +87,13 @@ namespace RelationsEF.BL
             await unitOfWork.CommitAsync();
         }
 
+        public async Task UpdateUserCourses(int userId, params object[] coursesIds)
+        {
+            userRepo.UpdateRelated(u => u.UserProfileID == userId, coursesIds, "Courses", "CourseID");
+            await unitOfWork.CommitAsync();
+        }
+
+
         #endregion
 
         #region Course

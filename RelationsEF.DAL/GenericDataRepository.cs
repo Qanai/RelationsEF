@@ -146,7 +146,7 @@ namespace RelationsEF.DAL
             }
         }
 
-        public void UpdateRelated(Func<T, bool> where, IEnumerable<object> updatedSet, string relatedPropertyName, string relatedPropertyKeyName)
+        public async Task UpdateRelated(Expression<Func<T, bool>> where, IEnumerable<object> updatedSet, string relatedPropertyName, string relatedPropertyKeyName)
         {
             if (updatedSet != null && updatedSet.Count() > 0)
             {
@@ -155,8 +155,9 @@ namespace RelationsEF.DAL
 
                 var items = context.Set<T>()
                     .Include(relatedPropertyName)
-                    .AsNoTracking()
-                    .Where(where);
+                    //.AsNoTracking()
+                    .Where(where.Compile())
+                    .ToList();
 
                 foreach (var item in items)
                 {
@@ -169,25 +170,29 @@ namespace RelationsEF.DAL
 
                     //var c = b.Select(pi => pi.GetValue())
 
-                    var aa = updatedSet
-                            .Select(obj => (int)(obj
-                            .GetType()
-                            .GetProperty(relatedPropertyKeyName)
-                            .GetValue(obj, null)));
+                    //var aa = updatedSet
+                    //        .Select(obj => (int)(obj
+                    //        .GetType()
+                    //        .GetProperty(relatedPropertyKeyName)
+                    //        .GetValue(obj, null)));
 
-                    var bb = aa.Select(val => context.Set(type).Find(val));
+                    //var bb = aa.Select(val => context.Set(type).Find(val));
 
-                    foreach (var entry in updatedSet
+                    var relatedEntries = updatedSet
                             .Select(obj => (int)(obj
                             .GetType()
                             .GetProperty(relatedPropertyKeyName)
                             .GetValue(obj, null)))
-                        .Select(val => context.Set(type).Find(val)))
+                        .Select(val => context.Set(type).Find(val));
+
+                    foreach (var entry in relatedEntries)
                     {
+                        await context.Entry(entry).ReloadAsync();
                         values.Add(entry);
                     }
 
                     context.Entry(item).Collection(relatedPropertyName).CurrentValue = values;
+                    context.Entry(item).State = EntityState.Modified;
                 }
             }
         }

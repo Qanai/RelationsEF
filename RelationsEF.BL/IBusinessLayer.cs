@@ -17,6 +17,7 @@ namespace RelationsEF.BL
         Task UpdateUser(params UserProfile[] users);
         Task RemoveUser(params UserProfile[] users);
         Task UpdateUserCourses(int userId, params Course[] courses);
+        Task UpdateUserCourses(int userId, params object[] courses);
         #endregion
 
         #region Course
