@@ -61,20 +61,20 @@ namespace RelationsEF.BL
             var user = GetUser(userId);
             if (user != null)
             {
-                if (user.Courses == null)
-                {
-                    user.Courses = new List<Course>();
-                }
+                //if (user.Courses == null)
+                //{
+                //    user.Courses = new List<Course>();
+                //}
 
-                user.Courses.Clear();
-                foreach (var course in courses)
-                {
-                    var c = courseRepo.GetSingle(i => i.CourseID == course.CourseID);
-                    user.Courses.Add(c);
-                    //c.UserProfiles.Add(user);
+                //user.Courses.Clear();
+                //foreach (var course in courses)
+                //{
+                //    var c = courseRepo.GetSingle(i => i.CourseID == course.CourseID);
+                //    user.Courses.Add(c);
+                //    //c.UserProfiles.Add(user);
 
-                    //courseRepo.Update(c);
-                }
+                //    //courseRepo.Update(c);
+                //}
 
                 userRepo.UpdateRelated(u => u.UserProfileID == user.UserProfileID, up => up.Courses);
 
