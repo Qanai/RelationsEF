@@ -150,6 +150,8 @@ namespace RelationsEF.DAL
         {
             if (updatedSet != null && updatedSet.Count() > 0)
             {
+                context.Database.Log = message => Trace.Write(message);
+                
                 // Get the generic type of the set
                 var type = updatedSet.First().GetType();
 
@@ -178,16 +180,19 @@ namespace RelationsEF.DAL
 
                     //var bb = aa.Select(val => context.Set(type).Find(val));
 
-                    var relatedEntries = updatedSet
+                    var qry = updatedSet
                             .Select(obj => (int)(obj
                             .GetType()
                             .GetProperty(relatedPropertyKeyName)
-                            .GetValue(obj, null)))
+                            .GetValue(obj, null)));
+
+                    var relatedEntries = qry
                         .Select(val => context.Set(type).Find(val));
+                        
 
                     foreach (var entry in relatedEntries)
                     {
-                        await context.Entry(entry).ReloadAsync();
+                        //await context.Entry(entry).ReloadAsync();
                         values.Add(entry);
                     }
 
