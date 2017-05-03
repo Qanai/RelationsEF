@@ -47,8 +47,8 @@ namespace RelationsEF.Web.Controllers
                 //userProfile = bl.GetUser(newUserId);
                 if (userProfile != null)
                 {
-                    AddOrUpdateCourses(userProfile, userProfileViewModel.Courses);
-                    await bl.UpdateUser(userProfile);
+                    await AddOrUpdateCourses(userProfile, userProfileViewModel.Courses);
+                    //await bl.UpdateUser(userProfile);
                     //await bl.UpdateCourse(userProfile.Courses.ToArray());
                 }
 
@@ -58,7 +58,7 @@ namespace RelationsEF.Web.Controllers
             return View(userProfileViewModel);
         }
 
-        private void AddOrUpdateCourses(UserProfile userProfile, IEnumerable<AssignedCourseData> assignedCourses)
+        private async Task AddOrUpdateCourses(UserProfile userProfile, IEnumerable<AssignedCourseData> assignedCourses)
         {
             if (assignedCourses != null)
             {
@@ -72,7 +72,7 @@ namespace RelationsEF.Web.Controllers
                                 CourseID = ac.CourseID,
                                 CourseDescription = ac.CourseDescription                            
                             });
-                bl.UpdateUserCourses(userProfile.UserProfileID, courses.ToArray());
+                await bl.UpdateUserCourses(userProfile.UserProfileID, courses.ToArray());
                 
 
                 //foreach (var assignedCourse in assignedCourses)

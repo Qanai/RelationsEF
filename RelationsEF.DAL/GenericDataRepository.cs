@@ -17,18 +17,18 @@ namespace RelationsEF.DAL
         private DbContext context;
         private bool disposed = false;
 
-        public GenericDataRepository(RelationsContext ctx)
+        public GenericDataRepository(DbContext ctx)
         {
             context = ctx;
         }
 
-        public GenericDataRepository()
-        {
-            if (context == null)
-            {
-                context = new RelationsContext();
-            }
-        }
+        //public GenericDataRepository()
+        //{
+        //    if (context == null)
+        //    {
+        //        context = new RelationsContext();
+        //    }
+        //}
 
         public virtual IList<T> GetAll(params Expression<Func<T, object>>[] navigationProperties)
         {
@@ -146,20 +146,20 @@ namespace RelationsEF.DAL
             }
         }
 
-        public async Task UpdateRelated(Expression<Func<T, bool>> where, IEnumerable<object> updatedSet, string relatedPropertyName, string relatedPropertyKeyName)
+        public void UpdateRelated(Expression<Func<T, bool>> where, IEnumerable<object> updatedSet, string relatedPropertyName, string relatedPropertyKeyName)
         {
             if (updatedSet != null && updatedSet.Count() > 0)
             {
                 context.Database.Log = message => Trace.Write(message);
-                
+
                 // Get the generic type of the set
                 var type = updatedSet.First().GetType();
 
                 var items = context.Set<T>()
                     .Include(relatedPropertyName)
                     //.AsNoTracking()
-                    .Where(where.Compile())
-                    .ToList();
+                    .ToList()
+                    .Where(where.Compile());
 
                 foreach (var item in items)
                 {
@@ -188,7 +188,6 @@ namespace RelationsEF.DAL
 
                     var relatedEntries = qry
                         .Select(val => context.Set(type).Find(val));
-                        
 
                     foreach (var entry in relatedEntries)
                     {
@@ -197,10 +196,11 @@ namespace RelationsEF.DAL
                     }
 
                     context.Entry(item).Collection(relatedPropertyName).CurrentValue = values;
-                    context.Entry(item).State = EntityState.Modified;
+                    //Update(item);
                 }
             }
         }
+
 
         private IList CreateList(Type type)
         {

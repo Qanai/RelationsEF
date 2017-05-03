@@ -2,6 +2,7 @@
 using RelationsEF.Domain;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,38 +59,45 @@ namespace RelationsEF.BL
 
         public async Task UpdateUserCourses(int userId, params Course[] courses)
         {
-            //var user = GetUser(userId);
-            //if (user != null)
-            //{
-            //    if (user.Courses == null)
-            //    {
-            //        user.Courses = new List<Course>();
-            //    }
+            try
+            {
+                var user = GetUser(userId);
+                if (user != null)
+                {
+                    //    if (user.Courses == null)
+                    //    {
+                    //        user.Courses = new List<Course>();
+                    //    }
 
-            //    user.Courses.Clear();
-            //    foreach (var course in courses)
-            //    {
-            //        var c = courseRepo.GetSingle(i => i.CourseID == course.CourseID);
-            //        user.Courses.Add(c);
-            //        //c.UserProfiles.Add(user);
+                    //    user.Courses.Clear();
+                    //    foreach (var course in courses)
+                    //    {
+                    //        var c = courseRepo.GetSingle(i => i.CourseID == course.CourseID);
+                    //        user.Courses.Add(c);
+                    //        //c.UserProfiles.Add(user);
 
-            //        //courseRepo.Update(c);
-            //    }
+                    //        //courseRepo.Update(c);
+                    //    }
 
-            //    userRepo.UpdateRelated(u => u.UserProfileID == user.UserProfileID, up => up.Courses);            
-            //    userRepo.Update(user);
-            //    await unitOfWork.CommitAsync();
-            //}
+                    //    userRepo.UpdateRelated(u => u.UserProfileID == user.UserProfileID, up => up.Courses);            
+                    //    userRepo.Update(user);
+                    //    await unitOfWork.CommitAsync();
+                }
 
-            await userRepo.UpdateRelated(u => u.UserProfileID == userId, (IEnumerable<Course>)courses, "Courses", "CourseID");
-            //var user = GetUser(userId);
-            //userRepo.Update(user);
-            await unitOfWork.CommitAsync();
+                userRepo.UpdateRelated(u => u.UserProfileID == userId, (IEnumerable<Course>)courses, "Courses", "CourseID");
+                //var user = GetUser(userId);
+                //userRepo.Update(user);
+                await unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                ;
+            }
         }
 
         public async Task UpdateUserCourses(int userId, params object[] coursesIds)
         {
-            await userRepo.UpdateRelated(u => u.UserProfileID == userId, coursesIds, "Courses", "CourseID");
+            userRepo.UpdateRelated(u => u.UserProfileID == userId, coursesIds, "Courses", "CourseID");
             await unitOfWork.CommitAsync();
         }
 

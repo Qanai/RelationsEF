@@ -45,7 +45,14 @@ namespace RelationsEF.DAL
 
         public async Task CommitAsync()
         {
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                string a = ex.Message;
+            }
         }
 
         public void Rollback()
